@@ -12,6 +12,7 @@ import (
 )
 
 func GetDoc(url string) (string,error) {
+	// 这里过滤一下空格
 	htc := http.Client{}
 	htc.Timeout = time.Second * 5
 	rsp,err := htc.Get(url)
@@ -63,7 +64,7 @@ func GetDoc(url string) (string,error) {
 
 			// 这里赋值一个文件名
 			if i == 0 && k == 0 {
-				fileName = "outPutDoc/" + zhString + ".doc"
+				fileName = zhString + ".doc"
 				docFile,err = os.Create(fileName)
 				if err != nil {
 					log.Printf("创建文件失败:%v",err)
