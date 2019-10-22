@@ -1,6 +1,8 @@
 package main
 
-import "wenkuProject/network"
+import (
+	"wenkuProject/network"
+)
 
 func main() {
 	network.StartApi()

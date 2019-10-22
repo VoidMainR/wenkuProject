@@ -2,24 +2,22 @@ package network
 
 import (
 	"github.com/gin-gonic/gin"
-	"regexp"
+	"net/http"
+	"wenkuProject/conf"
 	"wenkuProject/functions"
 )
 
 func getDoc(c *gin.Context) {
 	docUrl := c.Query("url")
-	//log.Printf("uuuurl:%s",docUrl)
-	docName,e := functions.GetDoc(docUrl)
+	docPath,e := functions.GetDoc(docUrl)
 	if e != nil {
 		c.Error(e)
 	}
-	if docName == "" {
+	if docPath == "" {
 		c.Error(e)
 		return
 	}
-	re := regexp.MustCompile("/(.*)$")
-	name := re.FindStringSubmatch(docName)
-	c.FileAttachment(docName,name[1])
-	c.Set("data","success")
+	docDownloadUrl := conf.OssConf.DownloadUrl+docPath
+	c.SecureJSON(http.StatusOK,docDownloadUrl)
 	return
 }

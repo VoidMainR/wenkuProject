@@ -9,6 +9,7 @@ import (
 
 func StartApi() {
 	g := gin.Default()
+	g.Use(CORSMiddleware())
 
 	g.GET("/getDoc", getDoc)
 
@@ -27,3 +28,10 @@ func StartApi() {
 
 }
 
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Content-Type", "application/json")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	}
+}
