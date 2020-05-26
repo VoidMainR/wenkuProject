@@ -1,7 +1,7 @@
 {
-  "endPoint": "oss-cn-hangzhou-internal.aliyuncs.com",
-  "accessKeyId": "LTAI4FsrGSUFwyXKZ11TWcpg",
-  "accessKeySecret": "eZUofz50NkgE0cJMgmVFMEcd56BAAx",
-  "bucket": "jmgcm-tools",
-  "downloadUrl": "http://download.jiemogancuimian.com/"
+  "endPoint": "",
+  "accessKeyId": "",
+  "accessKeySecret": "",
+  "bucket": "",
+  "downloadUrl": ""
 }
