@@ -1,36 +1,39 @@
 <header>
   <link
-    rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
-    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-    crossorigin="anonymous"
+    rel="stylesheet"
   />
 
-  <!-- ï¿½ï¿½Ñ¡ï¿½ï¿½ Bootstrap ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ò»ï¿½ã²»ï¿½ï¿½ï¿½ï¿½ï¿½ë£© -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
-    integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-    crossorigin="anonymous"
-  />
   <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
-  <!-- ï¿½ï¿½ï¿½Âµï¿½ Bootstrap ï¿½ï¿½ï¿½ï¿½ JavaScript ï¿½Ä¼ï¿½ -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
-    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-    crossorigin="anonymous"
-  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
 </header>
 
-<title>ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½</title>
+<title>ÃØÃÜÎÄ¿â</title>
 
-<div class="container-fluid">
-  <div class="row-fluid">
-    <div class="span12">
-      <form class="form-search">
-        <input id="urlLabel" class="input-medium search-query" type="text" />
-        <button type="button" class="btn" onclick="subClick()">ï¿½ï¿½È¡</button>
-      </form>
+<div class="container">
+  <h1 style="text-align: center;">ÉñÆæµÄÉú³É¹¤¾ß</h1>
+  <div class="row">
+    <input
+      id="urlLabel"
+      class="form-control"
+      placeholder="ÊäÈëÉñÃØ´úÂë...."
+      type="text"
+      style="text-align: center;"
+    />
+  </div>
+</br>
+  <div class="row">
+    <div style="text-align: center;">
+      <label id="tipLabel" hidden>ÕıÔÚÉú³ÉÎÄ¼ş.....</label>
+      <button
+        id="subBtn"
+        type="button"
+        class="btn btn-lg btn-success"
+        onclick="subClick()"
+        style="width: 30%;"
+      >
+        Ìá½»
+      </button>
     </div>
   </div>
 </div>
@@ -38,10 +41,20 @@
 <script>
   function subClick() {
     var enterUrl = $("#urlLabel").val();
-    $.get("http://192.168.1.137:8991/getDoc", { url: enterUrl }, function(
-      data
-    ) {
-      open(data);
-    });
+    $("#subBtn").hide();
+    $("#tipLabel").show();
+    $.get(
+      "http://api-cook.jiemogancuimian.com:8991/getDoc",
+      { url: enterUrl },
+      function(data) {
+        if (data == "") {
+          alert("Éú³ÉÎÄµµ³ö´í");
+        } else {
+          open(data);
+        }
+        $("#subBtn").show();
+        $("#tipLabel").hide();
+      }
+    );
   }
 </script>

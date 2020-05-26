@@ -12,7 +12,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 	"wenkuProject/conf"
 )
 
@@ -22,15 +21,27 @@ func convertString(src string, srcCode string) string {
 	return convertedSrc
 }
 
+// 获取百度文库文档脚本
 func GetDoc(url string) (string,error) {
-	htc := http.Client{}
-	htc.Timeout = time.Second * 5
-	rsp,err := htc.Get(url)
+	htc := &http.Client{}
+	//htc.Timeout = time.Second * 5
+	req,_ := http.NewRequest("GET",url,nil)
+
+	// 请求头添加
+	req.Header.Set("User-Agent", "uuid")
+	//req.Header.Set("Accept", "*/*")
+	//req.Header.Set("Cache-Control", "no-cache")
+	//req.Header.Set("Postman-Token", "b8b71aa9-7f2e-49b3-9516-5d6ce6c9eb39")
+	//req.Header.Set("Accept-Encoding", "gzip, deflate, br")
+	//req.Header.Set("Cookie", "BAIDUID=7F9269C5CCCE1F789B46CF429F9CD8EF:FG=1")
+	//req.Header.Set("Connection", "keep-alive")
+
+	rsp,err := htc.Do(req)
 
 	if rsp != nil {
 		defer rsp.Body.Close()
 	}
-	var buffer bytes.Buffer
+
 
 	if err != nil {
 		log.Printf("RequestErr:%v",err)
@@ -41,6 +52,23 @@ func GetDoc(url string) (string,error) {
 		log.Printf("getHtmlErr:%v",err)
 	}
 	htmlStr := string(htmlBytes)
+	
+	if htmlStr == "" {
+		return "", nil
+	}
+
+	buffer, titleStr := handleBody(htmlStr)
+
+	if buffer.Len() > 0 {
+		docPath,err := upLoadOSS(bytes.NewReader(buffer.Bytes()),titleStr)
+		return docPath, err
+	} else {
+		return "",err
+	}
+}
+
+func handleBody(htmlStr string) (*bytes.Buffer, string)  {
+	var buffer bytes.Buffer
 
 	// 获取title
 	titleRE := regexp.MustCompile("<title>(.*?)</title>")
@@ -52,13 +80,16 @@ func GetDoc(url string) (string,error) {
 
 	re := regexp.MustCompile("(https.*?0.json.*?)x22}")
 	urlArr := re.FindAllStringSubmatch(htmlStr,-1)
+	if urlArr == nil {
+		return &buffer, ""
+	}
 	newUrlArr := urlArr[:len(urlArr)/2]
 
 	y := ""
 
 	for _,textUrl := range newUrlArr {
 		trueUrl := strings.ReplaceAll(textUrl[1],"\\","")
-		textRsp,err := htc.Get(trueUrl)
+		textRsp,err := http.Get(trueUrl)
 		if err != nil {
 			log.Printf("getUrlErr:%v",err)
 		}
@@ -91,14 +122,9 @@ func GetDoc(url string) (string,error) {
 		textRsp.Body.Close()
 	}
 
-	if buffer.Len() > 0 {
-	  docPath,err := upLoadOSS(bytes.NewReader(buffer.Bytes()),titleStr)
-	  return docPath, err
-	} else {
-		return "",err
-	}
-
+	return &buffer, titleStr
 }
+
 
 // 上传文件到oss
 func upLoadOSS(strReader io.Reader, docName string) (string,error) {
